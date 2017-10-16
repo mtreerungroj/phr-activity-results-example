@@ -1,5 +1,8 @@
 import React, { Component } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
+import moment from 'moment'
+import RaisedButton from 'material-ui/RaisedButton'
+import DatePicker from 'material-ui/DatePicker'
 import CustomTooltip from './CustomTooltip'
 
 const SERVER_IP = 'http://172.20.10.9:5000/'
@@ -103,7 +106,9 @@ export default class MyChart extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      data: []
+      data: [],
+      startDate: '',
+      endDate: ''
     }
   }
 
@@ -142,21 +147,38 @@ export default class MyChart extends Component {
   }
 
   componentDidMount () {
-    // this.getChartData()
-    this.fetchChartData()
+    this.getChartData()
+    // this.fetchChartData()
+  }
+
+  handleChangeStartDate = (event, date) => {
+    let startDate = moment(date).format('YYYY-MM-DD')
+    this.setState({ startDate })
+  }
+
+  handleChangeEndDate = (event, date) => {
+    let endDate = moment(date).format('YYYY-MM-DD')
+    this.setState({ endDate })
   }
 
   render () {
     return (
       <div>
-        <LineChart width={600} height={320} data={this.state.data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <XAxis dataKey='date' padding={{ left: 30, right: 30 }} />
-          <YAxis />
-          <CartesianGrid strokeDasharray='5 5' />
-          <Tooltip content={<CustomTooltip />} />
-          <Legend />
-          <Line type='monotone' dataKey='max_level' stroke='#03A9F4' activeDot={{ r: 8 }} fill='#03A9F4' strokeWidth={3} />
-        </LineChart>
+        <section>
+          <DatePicker onChange={this.handleChangeStartDate} autoOk floatingLabelText='Start Date' disableYearSelection={this.state.disableYearSelection} />
+          <DatePicker onChange={this.handleChangeEndDate} autoOk floatingLabelText='Start Date' disableYearSelection={this.state.disableYearSelection} />
+          <RaisedButton label='Submit' primary style={{ margin: 12 }} />
+        </section>
+        <section>
+          <LineChart width={600} height={320} data={this.state.data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <XAxis dataKey='date' padding={{ left: 30, right: 30 }} />
+            <YAxis />
+            <CartesianGrid strokeDasharray='5 5' />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Line type='monotone' dataKey='max_level' stroke='#03A9F4' activeDot={{ r: 8 }} fill='#03A9F4' strokeWidth={3} />
+          </LineChart>
+        </section>
       </div>
     )
   }
