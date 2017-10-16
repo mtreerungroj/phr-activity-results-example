@@ -2,6 +2,10 @@ import React, { Component } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 import CustomTooltip from './CustomTooltip'
 
+const SERVER_IP = 'http://172.20.10.9:5000/'
+const ACTIVITY_RESULT_1 = 'activity_result/1'
+const ACTIVITY_RESULT_1_ALL = 'activity_result/1/all'
+
 const mock = [
   {
     activity_result_1: {
@@ -95,7 +99,7 @@ const mock = [
   }
 ]
 
-class MyChart extends Component {
+export default class MyChart extends Component {
   constructor (props) {
     super(props)
     this.state = {
@@ -118,8 +122,28 @@ class MyChart extends Component {
     })
   }
 
+  fetchChartData = async () => {
+    const path = `${SERVER_IP}${ACTIVITY_RESULT_1_ALL}`
+    var data = []
+
+    await fetch(path).then(results => results.json()).then(results => {
+      results.data.forEach(r => {
+        var result = r.activity_result_1
+        data.push({
+          date: result.date,
+          time: result.time,
+          assistant: Number(result.assistant),
+          max_level: Number(result.max_level)
+        })
+      })
+    })
+
+    this.setState({ data })
+  }
+
   componentDidMount () {
-    this.getChartData()
+    // this.getChartData()
+    this.fetchChartData()
   }
 
   render () {
@@ -137,5 +161,3 @@ class MyChart extends Component {
     )
   }
 }
-
-export default MyChart

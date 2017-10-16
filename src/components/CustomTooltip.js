@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 
-class CustomTooltip extends Component {
+export default class CustomTooltip extends Component {
   render () {
     const { active } = this.props
-
     if (active) {
       const { payload, label } = this.props
       return (
@@ -23,5 +22,3 @@ var styles = {
     backgroundColor: '#EEEEEE'
   }
 }
-
-export default CustomTooltip
