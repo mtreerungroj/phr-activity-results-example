@@ -213,7 +213,13 @@ export default class MyChart extends Component {
     return (
       <div>
         <section>
-          <DatePicker onChange={this.handleChangeStartDate} autoOk floatingLabelText='Start Date' disableYearSelection={this.state.disableYearSelection} />
+          <DatePicker
+            onChange={this.handleChangeStartDate}
+            autoOk
+            floatingLabelText='Start Date'
+            maxDate={new Date()}
+            disableYearSelection={this.state.disableYearSelection}
+          />
           <DatePicker
             onChange={this.handleChangeEndDate}
             autoOk
