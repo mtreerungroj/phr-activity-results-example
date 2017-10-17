@@ -111,6 +111,7 @@ export default class MyChart extends Component {
       chartData: [],
       startDate: null,
       endDate: null,
+      isChartShow: false,
       isDialogOpen: false,
       dialogMessage: ''
     }
@@ -182,7 +183,7 @@ export default class MyChart extends Component {
       .catch(error => {
         console.log('error=', error)
       })
-    this.setState(chartData.length > 0 ? { chartData } : { isDialogOpen: true, dialogMessage: 'ไม่พบข้อมูลในช่วงวันที่เลือก' })
+    this.setState(chartData.length > 0 ? { chartData, isChartShow: true } : { isDialogOpen: true, dialogMessage: 'ไม่พบข้อมูลในช่วงวันที่เลือก' })
   }
 
   handleChangeStartDate = (event, date) => {
@@ -219,16 +220,17 @@ export default class MyChart extends Component {
             {this.state.dialogMessage}
           </Dialog>
         </section>
-        <section>
-          <LineChart width={600} height={320} data={this.state.chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <XAxis dataKey='date' padding={{ left: 30, right: 30 }} />
-            <YAxis />
-            <CartesianGrid strokeDasharray='5 5' />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend />
-            <Line type='monotone' dataKey='max_level' stroke='#03A9F4' activeDot={{ r: 8 }} fill='#03A9F4' strokeWidth={3} />
-          </LineChart>
-        </section>
+        {this.state.isChartShow &&
+          <section>
+            <LineChart width={600} height={320} data={this.state.chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <XAxis dataKey='date' padding={{ left: 30, right: 30 }} />
+              <YAxis />
+              <CartesianGrid strokeDasharray='5 5' />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+              <Line type='monotone' dataKey='max_level' stroke='#03A9F4' activeDot={{ r: 8 }} fill='#03A9F4' strokeWidth={3} />
+            </LineChart>
+          </section>}
       </div>
     )
   }
