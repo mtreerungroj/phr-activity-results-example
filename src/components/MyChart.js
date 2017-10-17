@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Label } from 'recharts'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 import DatePicker from 'material-ui/DatePicker'
@@ -119,7 +119,7 @@ export default class MyChart extends Component {
 
   componentDidMount () {
     // this.getChartData()
-    this.fetchAllChartData()
+    // this.fetchAllChartData()
     // this.fetchChartDataWithRange()
   }
 
@@ -134,7 +134,7 @@ export default class MyChart extends Component {
         max_level: Number(d.activity_result_1.max_level)
       })
     })
-    this.setState({ chartData })
+    this.setState({ chartData, isChartShow: true })
   }
 
   // fetch all data from server
@@ -235,11 +235,18 @@ export default class MyChart extends Component {
         {this.state.isChartShow &&
           <section>
             <LineChart width={600} height={320} data={this.state.chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <XAxis dataKey='date' padding={{ left: 30, right: 30 }} />
-              <YAxis />
+              <XAxis dataKey='date' padding={{ left: 30, right: 30, bottom: 50 }}>
+                <Label position='insideBottom' style={{ textAnchor: 'middle' }}>
+                  Date
+                </Label>
+              </XAxis>
+              <YAxis>
+                <Label angle={270} position='left' style={{ textAnchor: 'middle' }}>
+                  Max Level
+                </Label>
+              </YAxis>
               <CartesianGrid strokeDasharray='5 5' />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
               <Line type='monotone' dataKey='max_level' stroke='#03A9F4' activeDot={{ r: 8 }} fill='#03A9F4' strokeWidth={3} />
             </LineChart>
           </section>}
