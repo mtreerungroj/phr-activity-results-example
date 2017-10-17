@@ -189,12 +189,10 @@ export default class MyChart extends Component {
   }
 
   handleChangeStartDate = (event, date) => {
-    // let startDate = date.toISOString().split('T')[0]
     this.setState({ startDate: date })
   }
 
   handleChangeEndDate = (event, date) => {
-    // let endDate = date.toISOString().split('T')[0]
     this.setState({ endDate: date })
   }
 
