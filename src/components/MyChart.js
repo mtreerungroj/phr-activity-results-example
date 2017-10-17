@@ -2,7 +2,9 @@ import React, { Component } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
 import moment from 'moment'
 import RaisedButton from 'material-ui/RaisedButton'
+import FlatButton from 'material-ui/FlatButton'
 import DatePicker from 'material-ui/DatePicker'
+import Dialog from 'material-ui/Dialog'
 import CustomTooltip from './CustomTooltip'
 
 // const SERVER_IP = 'http://172.20.10.9:5000/'
@@ -109,7 +111,9 @@ export default class MyChart extends Component {
     this.state = {
       chartData: [],
       startDate: null,
-      endDate: null
+      endDate: null,
+      isDialogOpen: false,
+      dialogMessage: ''
     }
   }
 
@@ -179,7 +183,7 @@ export default class MyChart extends Component {
       .catch(error => {
         console.log('error=', error)
       })
-    chartData.length > 0 ? this.setState({ chartData }) : console.log("alert user that it's empty")
+    this.setState(chartData.length > 0 ? { chartData } : { isDialogOpen: true, dialogMessage: 'ไม่พบข้อมูลในช่วงวันที่เลือก' })
   }
 
   handleChangeStartDate = (event, date) => {
@@ -194,16 +198,27 @@ export default class MyChart extends Component {
 
   handleSubmit = e => {
     e.preventDefault()
-    this.state.startDate && this.state.endDate && this.fetchChartDataWithRange()
+    this.state.startDate && this.state.endDate
+      ? this.fetchChartDataWithRange()
+      : this.setState({ isDialogOpen: true, dialogMessage: 'กรุณาเลือกช่วงวันที่ต้องการดูข้อมูล' })
+  }
+
+  handleDialogClose = e => {
+    this.setState({ isDialogOpen: false })
   }
 
   render () {
+    const actions = [<FlatButton label='ตกลง' primary onClick={this.handleDialogClose} />]
+
     return (
       <div>
         <section>
           <DatePicker onChange={this.handleChangeStartDate} autoOk floatingLabelText='Start Date' disableYearSelection={this.state.disableYearSelection} />
-          <DatePicker onChange={this.handleChangeEndDate} autoOk floatingLabelText='Start Date' disableYearSelection={this.state.disableYearSelection} />
+          <DatePicker onChange={this.handleChangeEndDate} autoOk floatingLabelText='Stop Date' disableYearSelection={this.state.disableYearSelection} />
           <RaisedButton label='Submit' type='submit' primary style={{ margin: 12 }} onClick={this.handleSubmit} />
+          <Dialog title='เกิดข้อผิดพลาด' actions={actions} modal={false} open={this.state.isDialogOpen} onRequestClose={this.handleDialogClose}>
+            {this.state.dialogMessage}
+          </Dialog>
         </section>
         <section>
           <LineChart width={600} height={320} data={this.state.chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
