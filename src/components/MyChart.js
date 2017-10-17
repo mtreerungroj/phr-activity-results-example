@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts'
-import moment from 'moment'
 import RaisedButton from 'material-ui/RaisedButton'
 import FlatButton from 'material-ui/FlatButton'
 import DatePicker from 'material-ui/DatePicker'
@@ -187,12 +186,12 @@ export default class MyChart extends Component {
   }
 
   handleChangeStartDate = (event, date) => {
-    let startDate = moment(date).format('YYYY-MM-DD')
+    let startDate = date.toISOString().split('T')[0]
     this.setState({ startDate })
   }
 
   handleChangeEndDate = (event, date) => {
-    let endDate = moment(date).format('YYYY-MM-DD')
+    let endDate = date.toISOString().split('T')[0]
     this.setState({ endDate })
   }
 
