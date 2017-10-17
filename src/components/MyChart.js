@@ -163,8 +163,10 @@ export default class MyChart extends Component {
   // fetch data in selected range from server
   fetchChartDataWithRange = async () => {
     const userid = '11111', // uid's user logging in
-      appid = 'appid' // specific ?
-    const path = `${SERVER_IP}${ACTIVITY_RESULT_1}?userid=${userid}&appid=${appid}&start_date=${this.state.startDate}&end_date=${this.state.endDate}`
+      appid = 'appid', // specific ?
+      start_date = this.state.startDate.toISOString().split('T')[0],
+      end_date = this.state.endDate.toISOString().split('T')[0]
+    const path = `${SERVER_IP}${ACTIVITY_RESULT_1}?userid=${userid}&appid=${appid}&start_date=${start_date}&end_date=${end_date}`
 
     var chartData = []
     await fetch(path)
@@ -187,13 +189,13 @@ export default class MyChart extends Component {
   }
 
   handleChangeStartDate = (event, date) => {
-    let startDate = date.toISOString().split('T')[0]
-    this.setState({ startDate })
+    // let startDate = date.toISOString().split('T')[0]
+    this.setState({ startDate: date })
   }
 
   handleChangeEndDate = (event, date) => {
-    let endDate = date.toISOString().split('T')[0]
-    this.setState({ endDate })
+    // let endDate = date.toISOString().split('T')[0]
+    this.setState({ endDate: date })
   }
 
   handleSubmit = e => {
@@ -214,7 +216,13 @@ export default class MyChart extends Component {
       <div>
         <section>
           <DatePicker onChange={this.handleChangeStartDate} autoOk floatingLabelText='Start Date' disableYearSelection={this.state.disableYearSelection} />
-          <DatePicker onChange={this.handleChangeEndDate} autoOk floatingLabelText='Stop Date' disableYearSelection={this.state.disableYearSelection} />
+          <DatePicker
+            onChange={this.handleChangeEndDate}
+            autoOk
+            floatingLabelText='Stop Date'
+            minDate={this.state.startDate}
+            disableYearSelection={this.state.disableYearSelection}
+          />
           <RaisedButton label='Submit' type='submit' primary style={{ margin: 12 }} onClick={this.handleSubmit} />
           <Dialog title='เกิดข้อผิดพลาด' actions={actions} modal={false} open={this.state.isDialogOpen} onRequestClose={this.handleDialogClose}>
             {this.state.dialogMessage}
