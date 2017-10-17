@@ -5,7 +5,8 @@ import RaisedButton from 'material-ui/RaisedButton'
 import DatePicker from 'material-ui/DatePicker'
 import CustomTooltip from './CustomTooltip'
 
-const SERVER_IP = 'http://172.20.10.9:5000/'
+// const SERVER_IP = 'http://172.20.10.9:5000/'
+const SERVER_IP = 'http://192.168.253.128:5000/'
 const ACTIVITY_RESULT_1 = 'activity_result/1'
 const ACTIVITY_RESULT_1_ALL = 'activity_result/1/all'
 
@@ -106,12 +107,19 @@ export default class MyChart extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      data: [],
-      startDate: '',
-      endDate: ''
+      chartData: [],
+      startDate: null,
+      endDate: null
     }
   }
 
+  componentDidMount () {
+    // this.getChartData()
+    this.fetchAllChartData()
+    // this.fetchChartDataWithRange()
+  }
+
+  // get chart data from mock data
   getChartData = async () => {
     var chartData = []
     await mock.forEach(d => {
@@ -122,33 +130,56 @@ export default class MyChart extends Component {
         max_level: Number(d.activity_result_1.max_level)
       })
     })
-    this.setState({
-      data: chartData
-    })
+    this.setState({ chartData })
   }
 
-  fetchChartData = async () => {
+  // fetch all data from server
+  fetchAllChartData = async () => {
     const path = `${SERVER_IP}${ACTIVITY_RESULT_1_ALL}`
-    var data = []
-
-    await fetch(path).then(results => results.json()).then(results => {
-      results.data.forEach(r => {
-        var result = r.activity_result_1
-        data.push({
-          date: result.date,
-          time: result.time,
-          assistant: Number(result.assistant),
-          max_level: Number(result.max_level)
+    var chartData = []
+    await fetch(path)
+      .then(response => response.json())
+      .then(responseData => {
+        responseData.data.forEach(r => {
+          var result = r.activity_result_1
+          chartData.push({
+            date: result.date,
+            time: result.time,
+            assistant: Number(result.assistant),
+            max_level: Number(result.max_level)
+          })
         })
       })
-    })
-
-    this.setState({ data })
+      .catch(error => {
+        console.log('error=', error)
+      })
+    chartData.length > 0 ? this.setState({ chartData }) : console.log("alert user that it's empty")
   }
 
-  componentDidMount () {
-    this.getChartData()
-    // this.fetchChartData()
+  // fetch data in selected range from server
+  fetchChartDataWithRange = async () => {
+    const userid = '11111', // uid's user logging in
+      appid = 'appid' // specific ?
+    const path = `${SERVER_IP}${ACTIVITY_RESULT_1}?userid=${userid}&appid=${appid}&start_date=${this.state.startDate}&end_date=${this.state.endDate}`
+
+    var chartData = []
+    await fetch(path)
+      .then(response => response.json())
+      .then(responseData => {
+        responseData.data.forEach(r => {
+          var result = r.activity_result_1
+          chartData.push({
+            date: result.date,
+            time: result.time,
+            assistant: Number(result.assistant),
+            max_level: Number(result.max_level)
+          })
+        })
+      })
+      .catch(error => {
+        console.log('error=', error)
+      })
+    chartData.length > 0 ? this.setState({ chartData }) : console.log("alert user that it's empty")
   }
 
   handleChangeStartDate = (event, date) => {
@@ -161,16 +192,21 @@ export default class MyChart extends Component {
     this.setState({ endDate })
   }
 
+  handleSubmit = e => {
+    e.preventDefault()
+    this.state.startDate && this.state.endDate && this.fetchChartDataWithRange()
+  }
+
   render () {
     return (
       <div>
         <section>
           <DatePicker onChange={this.handleChangeStartDate} autoOk floatingLabelText='Start Date' disableYearSelection={this.state.disableYearSelection} />
           <DatePicker onChange={this.handleChangeEndDate} autoOk floatingLabelText='Start Date' disableYearSelection={this.state.disableYearSelection} />
-          <RaisedButton label='Submit' primary style={{ margin: 12 }} />
+          <RaisedButton label='Submit' type='submit' primary style={{ margin: 12 }} onClick={this.handleSubmit} />
         </section>
         <section>
-          <LineChart width={600} height={320} data={this.state.data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart width={600} height={320} data={this.state.chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
             <XAxis dataKey='date' padding={{ left: 30, right: 30 }} />
             <YAxis />
             <CartesianGrid strokeDasharray='5 5' />
